@@ -50,7 +50,6 @@ export class GameScene {
         this.rigidBodies = [];
         this.timeStep = 1 / 60;
 
-        console.log(this.ammo)
         // Add ground
         const ground = new Ground(this.ammo);
         this.scene.add(ground.getObject());
