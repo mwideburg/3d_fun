@@ -11,7 +11,6 @@ export class GameScene {
         this.initPhsysics()
         this.initGraphics()
 
-        // Animation
         this.animate = this.animate.bind(this);
     }
 
@@ -38,8 +37,8 @@ export class GameScene {
     }
 
     async initPhsysics() {
-        // Wait for Ammo to be fully initialized
         this.ammo = await Ammo();
+
         // Create physics world with gravity
         const collisionConfiguration = new this.ammo.btDefaultCollisionConfiguration();
         const dispatcher = new this.ammo.btCollisionDispatcher(collisionConfiguration);
@@ -94,8 +93,6 @@ export class GameScene {
             }
         }
     }
-
-
 
     animate() {
         requestAnimationFrame(this.animate);
