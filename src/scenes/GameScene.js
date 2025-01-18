@@ -49,6 +49,25 @@ export class GameScene {
 
         
     }
+
+    async initPhsysics() {
+        // Wait for Ammo to be fully initialized
+        this.ammo = await Ammo();
+        // Create physics world with gravity
+        const collisionConfiguration = new this.ammo.btDefaultCollisionConfiguration();
+        const dispatcher = new this.ammo.btCollisionDispatcher(collisionConfiguration);
+        const broadphase = new this.ammo.btDbvtBroadphase();
+        const solver = new this.ammo.btSequentialImpulseConstraintSolver();
+        this.physicsWorld = new this.ammo.btDiscreteDynamicsWorld(dispatcher, broadphase, solver, collisionConfiguration);
+        this.physicsWorld.setGravity(new this.ammo.btVector3(0, -9.8, 0));
+
+        this.rigidBodies = [];
+        this.timeStep = 1 / 60;
+        this.addDynamicPhysicsBody(this.box.getObject(), new THREE.Vector3(1, 1, 1), 1); // Mass = 1
+        this.addStaticPhysicsBody(this.ground.getObject(), new THREE.Vector3(20, 0.5, 20));
+        this.animate()
+    }
+    
     addDynamicPhysicsBody(object, size, mass) {
         const transform = new this.ammo.btTransform();
         transform.setIdentity();
@@ -86,23 +105,6 @@ export class GameScene {
         this.physicsWorld.addRigidBody(body);
     }
 
-    async initPhsysics() {
-        // Wait for Ammo to be fully initialized
-        this.ammo = await Ammo();
-        // Create physics world with gravity
-        const collisionConfiguration = new this.ammo.btDefaultCollisionConfiguration();
-        const dispatcher = new this.ammo.btCollisionDispatcher(collisionConfiguration);
-        const broadphase = new this.ammo.btDbvtBroadphase();
-        const solver = new this.ammo.btSequentialImpulseConstraintSolver();
-        this.physicsWorld = new this.ammo.btDiscreteDynamicsWorld(dispatcher, broadphase, solver, collisionConfiguration);
-        this.physicsWorld.setGravity(new this.ammo.btVector3(0, -9.8, 0));
-
-        this.rigidBodies = [];
-        this.timeStep = 1 / 60;
-        this.addDynamicPhysicsBody(this.box.getObject(), new THREE.Vector3(1, 1, 1), 1); // Mass = 1
-        this.addStaticPhysicsBody(this.ground.getObject(), new THREE.Vector3(20, 0.5, 20));
-        this.animate()
-    }
 
     updatePhysics(deltaTime) {
         // Step simulation
@@ -129,7 +131,6 @@ export class GameScene {
         requestAnimationFrame(this.animate);
 
         const deltaTime = this.timeStep;
-        this.box.rotate(0.01, 0.01, 0);
         this.updatePhysics(deltaTime)
         
         this.controls.update();
