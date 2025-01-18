@@ -34,20 +34,7 @@ export class GameScene {
         this.scene.add(ambientLight.getLight());
 
         const directionalLight = new DirectionalLight(0xffffff, 1, { x: 5, y: 10, z: 0 });
-        this.scene.add(directionalLight.getLight());
-
-        // Add ground
-        const ground = new Ground();
-        this.ground = ground
-        this.scene.add(ground.getObject());
-
-        // Add box
-        this.box = new Box();
-        this.box.setPosition(new THREE.Vector3(0, 20, 0));
-        this.scene.add(this.box.getObject());
-        
-
-        
+        this.scene.add(directionalLight.getLight());        
     }
 
     async initPhsysics() {
@@ -63,45 +50,28 @@ export class GameScene {
 
         this.rigidBodies = [];
         this.timeStep = 1 / 60;
-        this.addDynamicPhysicsBody(this.box.getObject(), new THREE.Vector3(1, 1, 1), 1); // Mass = 1
-        this.addStaticPhysicsBody(this.ground.getObject(), new THREE.Vector3(20, 0.5, 20));
+
+        console.log(this.ammo)
+        // Add ground
+        const ground = new Ground(this.ammo);
+        this.scene.add(ground.getObject());
+        // Add box
+        const box = new Box(this.ammo);
+        box.setPosition(new THREE.Vector3(0, 20, 0));
+        this.scene.add(box.getObject());
+
+        this.addDynamicPhysicsBody(box.getObject(), box.createPhysics())
+        this.addStaticPhysicsBody(ground.createPhysics());
+        
         this.animate()
     }
     
-    addDynamicPhysicsBody(object, size, mass) {
-        const transform = new this.ammo.btTransform();
-        transform.setIdentity();
-        transform.setOrigin(new this.ammo.btVector3(object.position.x, object.position.y, object.position.z));
-        const motionState = new this.ammo.btDefaultMotionState(transform);
-        const collisionShape = new this.ammo.btBoxShape(new this.ammo.btVector3(size.x / 2, size.y / 2, size.z / 2));
-        const localInertia = new this.ammo.btVector3(0, 0, 0);
-        collisionShape.calculateLocalInertia(mass, localInertia);
-
-        // Create rigid body
-        const rbInfo = new this.ammo.btRigidBodyConstructionInfo(mass, motionState, collisionShape, localInertia);
-        const body = new this.ammo.btRigidBody(rbInfo);
-        body.setFriction(0.5);
-
-        // Add to physics world
+    addDynamicPhysicsBody(object, body, mass) {
         this.physicsWorld.addRigidBody(body);
         this.rigidBodies.push({ object, body });
     }
 
-    addStaticPhysicsBody(object, size) {
-        // Create Ammo.js collision shape
-        const transform = new this.ammo.btTransform();
-        transform.setIdentity();
-        transform.setOrigin(new this.ammo.btVector3(object.position.x, object.position.y, object.position.z));
-        const motionState = new this.ammo.btDefaultMotionState(transform);
-        const collisionShape = new this.ammo.btBoxShape(new this.ammo.btVector3(size.x / 2, size.y / 2, size.z / 2));
-        const localInertia = new this.ammo.btVector3(0, 0, 0);
-        collisionShape.calculateLocalInertia(0, localInertia); // Static body has zero mass
-
-        // Create rigid body
-        const rbInfo = new this.ammo.btRigidBodyConstructionInfo(0, motionState, collisionShape, localInertia);
-        const body = new this.ammo.btRigidBody(rbInfo);
-
-        // Add to physics world
+    addStaticPhysicsBody(body) {
         this.physicsWorld.addRigidBody(body);
     }
 
