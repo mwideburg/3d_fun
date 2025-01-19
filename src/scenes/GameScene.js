@@ -1,17 +1,29 @@
 import * as THREE from 'three';
-import { Box } from '../objects/rigid/Box';
 import { Ground } from '../objects/rigid/Ground';
 import { AmbientLight } from '../objects/lighting/AmbientLight';
 import { DirectionalLight } from '../objects/lighting/DirectionalLight';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import Ammo from '../../ammo/ammo.js'
-import { deltaTime } from 'three/tsl';
+import * as CANNON from 'cannon-es'
 export class GameScene {
-    constructor(ammo) {
-        this.initPhsysics()
-        this.initGraphics()
-
+    constructor() {
         this.animate = this.animate.bind(this);
+        this.initGraphics = this.initGraphics.bind(this);
+        this.initPhsysics = this.initPhsysics.bind(this);
+        this.initWindowResize = this.initWindowResize.bind(this);
+        this.initGraphics()
+        this.initPhsysics()
+        this.initWindowResize()
+
+        
+        
+    }
+
+    initWindowResize(){
+        window.addEventListener('resize', () => {
+            this.camera.aspect = window.innerWidth / window.innerHeight;
+            this.camera.updateProjectionMatrix();
+            this.renderer.setSize(window.innerWidth, window.innerHeight);
+        });
     }
 
     initGraphics() {
@@ -33,71 +45,36 @@ export class GameScene {
         this.scene.add(ambientLight.getLight());
 
         const directionalLight = new DirectionalLight(0xffffff, 1, { x: 5, y: 10, z: 0 });
-        this.scene.add(directionalLight.getLight());        
+        this.scene.add(directionalLight.getLight());   
+        
+        const ground = new Ground()
+        this.groundMesh = ground.getObject()
+        this.scene.add(ground.getObject())
     }
 
-    async initPhsysics() {
-        this.ammo = await Ammo();
+    initPhsysics() {
+        this.world = new CANNON.World({
+            gravity: new CANNON.Vec3(0, -9.8, 0)
+        })
 
-        // Create physics world with gravity
-        const collisionConfiguration = new this.ammo.btDefaultCollisionConfiguration();
-        const dispatcher = new this.ammo.btCollisionDispatcher(collisionConfiguration);
-        const broadphase = new this.ammo.btDbvtBroadphase();
-        const solver = new this.ammo.btSequentialImpulseConstraintSolver();
-        this.physicsWorld = new this.ammo.btDiscreteDynamicsWorld(dispatcher, broadphase, solver, collisionConfiguration);
-        this.physicsWorld.setGravity(new this.ammo.btVector3(0, -9.8, 0));
+        this.groundBody = new CANNON.Body({
+            shape: new CANNON.Plane(),
+            type: CANNON.Body.STATIC
+        })
+        this.world.addBody(this.groundBody)
 
-        this.rigidBodies = [];
-        this.timeStep = 1 / 60;
 
-        // Add ground
-        const ground = new Ground(this.ammo);
-        this.scene.add(ground.getObject());
-        // Add box
-        const box = new Box(this.ammo);
-        box.setPosition(new THREE.Vector3(0, 20, 0));
-        this.scene.add(box.getObject());
-
-        this.addDynamicPhysicsBody(box.getObject(), box.createPhysics())
-        this.addStaticPhysicsBody(ground.createPhysics());
+        this.timeStep = 1/60
         
-        this.animate()
+        this.renderer.setAnimationLoop(this.animate)
     }
     
-    addDynamicPhysicsBody(object, body, mass) {
-        this.physicsWorld.addRigidBody(body);
-        this.rigidBodies.push({ object, body });
-    }
-
-    addStaticPhysicsBody(body) {
-        this.physicsWorld.addRigidBody(body);
-    }
-
-
-    updatePhysics(deltaTime) {
-        // Step simulation
-        this.physicsWorld.stepSimulation(deltaTime, 10);
-
-        // Update Three.js objects based on Ammo.js physics
-        for (const { object, body } of this.rigidBodies) {
-            const motionState = body.getMotionState();
-            if (motionState) {
-                const transform = new this.ammo.btTransform();
-                motionState.getWorldTransform(transform);
-                const origin = transform.getOrigin();
-                const rotation = transform.getRotation();
-
-                object.position.set(origin.x(), origin.y(), origin.z());
-                object.quaternion.set(rotation.x(), rotation.y(), rotation.z(), rotation.w());
-            }
-        }
-    }
-
     animate() {
-        requestAnimationFrame(this.animate);
+        
+        this.world.step(this.timeStep)
 
-        const deltaTime = this.timeStep;
-        this.updatePhysics(deltaTime)
+        this.groundMesh.position.copy(this.groundBody.position)
+        this.groundMesh.quaternion.copy(this.groundBody.quaternion)
         
         this.controls.update();
         this.renderer.render(this.scene, this.camera);
