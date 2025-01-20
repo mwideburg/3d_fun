@@ -1,30 +1,23 @@
 import * as THREE from 'three';
+import * as CANNON from 'cannon-es'
 
 export class Box {
-    constructor(size = { x: 1, y: 1, z: 1 }, color = 0xff0000) {
+    constructor(size = { x: 2, y: 2, z: 2 }, color = 0xff0000) {
         this.size = size
         const geometry = new THREE.BoxGeometry(size.x, size.y, size.z);
-        const material = new THREE.MeshStandardMaterial({ color });
-        this.object = new THREE.Mesh(geometry, material);
-        this.object.castShadow = true;
-    }
+        const material = new THREE.MeshStandardMaterial({ color, wireframe: true });
+        this.mesh = new THREE.Mesh(geometry, material);
+        this.mesh.castShadow = true;
 
-    createPhysics(){
-        
-    }
+        this.physMat = new CANNON.Material();
+        this.body = new CANNON.Body({
+            mass: 1,
+            shape: new CANNON.Box(new CANNON.Vec3(1, 1, 1)),
+            position: new CANNON.Vec3(1, 20, 0),
+            material: this.physMat
+        })
 
-    getObject() {
-        return this.object;
+        this.body.angularVelocity.set(0, 10, 0);
+        this.body.angularDamping = 0.5;
     }
-
-    setPosition(position) {
-        this.object.position.copy(position);
-    }
-
-    rotate(x, y, z) {
-        this.object.rotation.x += x;
-        this.object.rotation.y += y;
-        this.object.rotation.z += z;
-    }
-    
 }

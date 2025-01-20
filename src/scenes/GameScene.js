@@ -63,34 +63,27 @@ export class GameScene {
 
         this.ridigBodies = []
 
-        const ground = new Ground()
-        this.groundMesh = ground.getObject()
-        this.scene.add(ground.getObject())
+        this.ground = new Ground()
+        this.scene.add(this.ground.getMesh())
 
-        const groundPhysMat = new CANNON.Material();
+        this.ridigBodies.push([this.ground.getMesh(), this.ground.getBody()])
+        this.world.addBody(this.ground.getBody())
 
-        this.groundBody = new CANNON.Body({
-            //shape: new CANNON.Plane(),
-            //mass: 10
-            shape: new CANNON.Box(new CANNON.Vec3(15, 15, 0.1)),
-            type: CANNON.Body.STATIC,
-            material: groundPhysMat
-        });
-        this.groundBody.quaternion.setFromEuler(-Math.PI / 2, 0, 0);
-
-        this.ridigBodies.push([this.groundMesh, this.groundBody])
-        this.world.addBody(this.groundBody)
-        this.groundBody.quaternion.setFromEuler(-Math.PI / 2, 0, 0)
         const box = new Box()
-        // box.setPosition(new THREE.Vector3(0, 5, 0))
-        const boxBody = new CANNON.Body({
-            shape: new CANNON.Box(new CANNON.Vec3(1, 1, 1)),
-            mass: 10,
-            position: new CANNON.Vec3(1, 5, 0)
-        })
-        this.scene.add(box.getObject())
-        this.world.addBody(boxBody)
-        this.ridigBodies.push([box.getObject(), boxBody])
+
+        this.scene.add(box.mesh)
+        this.world.addBody(box.body)
+        this.ridigBodies.push([box.mesh, box.body])
+
+        
+
+        const groundBoxContactMat = new CANNON.ContactMaterial(
+            this.ground.physMat,
+            box.physMat,
+            { friction: 0.04 }
+        );
+
+        this.world.addContactMaterial(groundBoxContactMat);
 
         this.timeStep = 1 / 60
 
