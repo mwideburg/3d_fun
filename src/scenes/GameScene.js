@@ -59,10 +59,11 @@ export class GameScene {
         this.ridigBodies = []
 
         this.ground = new Ground()
-        this.scene.add(this.ground.getMesh())
+        
+        this.scene.add(this.ground.mesh)
+        this.world.addBody(this.ground.body)
+        this.ridigBodies.push([this.ground.mesh, this.ground.body])
 
-        this.ridigBodies.push([this.ground.getMesh(), this.ground.getBody()])
-        this.world.addBody(this.ground.getBody())
 
         const box = new Box()
 

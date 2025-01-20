@@ -19,12 +19,4 @@ export class Ground {
         });
         this.body.quaternion.setFromEuler(-Math.PI / 2, 0, 0)
     }
-
-    getMesh() {
-        return this.mesh;
-    }
-
-    getBody() {
-        return this.body
-    }
 }
