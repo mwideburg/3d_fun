@@ -3,10 +3,9 @@ import * as CANNON from 'cannon-es'
 export class Ground {
     constructor(color = 0x0000ff) {
         const geometry = new THREE.BoxGeometry(300, 300, 0.2);
-        const material = new THREE.MeshStandardMaterial({
+        const material = new THREE.MeshPhongMaterial({
             color,
             side: THREE.DoubleSide,
-            wireframe: true
         });
         this.mesh = new THREE.Mesh(geometry, material);
         this.mesh.receiveShadow = true;

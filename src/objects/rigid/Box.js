@@ -5,7 +5,7 @@ export class Box {
     constructor(size = { x: 2, y: 2, z: 2 }, color = 0xff0000) {
         this.size = size
         const geometry = new THREE.BoxGeometry(size.x, size.y, size.z);
-        const material = new THREE.MeshStandardMaterial({ color, wireframe: true });
+        const material = new THREE.MeshPhongMaterial({ color });
         this.mesh = new THREE.Mesh(geometry, material);
         this.mesh.castShadow = true;
 

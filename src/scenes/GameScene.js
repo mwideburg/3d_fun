@@ -1,10 +1,12 @@
 import * as THREE from 'three';
 import { Ground } from '../objects/rigid/Ground';
 import { Box } from '../objects/rigid/Box'
+import { Player } from '../objects/rigid/Player';
 import { AmbientLight } from '../objects/lighting/AmbientLight';
 import { DirectionalLight } from '../objects/lighting/DirectionalLight';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import * as CANNON from 'cannon-es'
+import { SpotLight } from '../objects/lighting/SpotLight';
 export class GameScene {
     constructor() {
         this.animate = this.animate.bind(this);
@@ -37,17 +39,26 @@ export class GameScene {
 
         // Camera and controls
         this.camera.position.set(0, 5, -20);
+        
         this.controls = new OrbitControls(this.camera, this.renderer.domElement);
         this.controls.minDistance = 1;
-        this.controls.maxDistance = 50;
+        this.controls.maxDistance = 500;
 
         // Add lights
         const ambientLight = new AmbientLight(0xffffff, 0.5);
         this.scene.add(ambientLight.getLight());
 
-        const directionalLight = new DirectionalLight(0xffffff, 1, { x: 5, y: 10, z: 0 });
+        const directionalLight = new DirectionalLight(0xffffff, 1, { x: 15, y: 20, z: 0 });
         this.scene.add(directionalLight.getLight());
+        this.scene.add(directionalLight.helper)
 
+        const spotLight = new SpotLight()
+        spotLight.light.position.set(-40, 75, 4.5);
+        const spotLightHelper = new THREE.SpotLightHelper(spotLight.light);
+        this.scene.add(spotLight.light);
+        this.scene.add(spotLightHelper);
+        const shadowCameraHelper = new THREE.CameraHelper(spotLight.light.shadow.camera);
+        this.scene.add(shadowCameraHelper);
 
     }
 
@@ -59,7 +70,7 @@ export class GameScene {
         this.ridigBodies = []
 
         this.ground = new Ground()
-        
+
         this.scene.add(this.ground.mesh)
         this.world.addBody(this.ground.body)
         this.ridigBodies.push([this.ground.mesh, this.ground.body])
@@ -76,8 +87,13 @@ export class GameScene {
             box.physMat,
             { friction: 0.04 }
         );
-
         this.world.addContactMaterial(groundBoxContactMat);
+
+        const player = new Player()
+        player.body.position = new CANNON.Vec3(3, 5, 0)
+        this.scene.add(player.mesh)
+        this.world.addBody(player.body)
+        this.ridigBodies.push([player.mesh, player.body])
 
         this.timeStep = 1 / 60
 
