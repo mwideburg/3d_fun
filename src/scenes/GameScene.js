@@ -8,15 +8,10 @@ import * as CANNON from 'cannon-es'
 export class GameScene {
     constructor() {
         this.animate = this.animate.bind(this);
-        this.initGraphics = this.initGraphics.bind(this);
-        this.initPhsysics = this.initPhsysics.bind(this);
-        this.initWindowResize = this.initWindowResize.bind(this);
+
         this.initGraphics()
         this.initPhsysics()
         this.initWindowResize()
-
-
-
     }
 
     initWindowResize() {
@@ -74,8 +69,6 @@ export class GameScene {
         this.scene.add(box.mesh)
         this.world.addBody(box.body)
         this.ridigBodies.push([box.mesh, box.body])
-
-        
 
         const groundBoxContactMat = new CANNON.ContactMaterial(
             this.ground.physMat,
