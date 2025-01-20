@@ -1,12 +1,11 @@
 import * as THREE from 'three';
 import { Ground } from '../objects/rigid/Ground';
 import { Box } from '../objects/rigid/Box'
-import { Player } from '../objects/rigid/Player';
 import { AmbientLight } from '../objects/lighting/AmbientLight';
 import { DirectionalLight } from '../objects/lighting/DirectionalLight';
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import * as CANNON from 'cannon-es'
 import { SpotLight } from '../objects/lighting/SpotLight';
+import { OrbitPlayer } from '../objects/rigid/OrbitPlayer';
 export class GameScene {
     constructor() {
         this.animate = this.animate.bind(this);
@@ -26,23 +25,21 @@ export class GameScene {
 
     initGraphics() {
         this.scene = new THREE.Scene();
-        this.camera = new THREE.PerspectiveCamera(
-            45,
-            window.innerWidth / window.innerHeight,
-            0.1,
-            1000
-        );
+        const fielofview = 75;
+        const aspectratio = window.innerWidth / window.innerHeight;
+        const near = 0.1;
+        const far = 1000;
+        this.camera = new THREE.PerspectiveCamera(fielofview, aspectratio, near, far);
         this.renderer = new THREE.WebGLRenderer();
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         this.renderer.shadowMap.enabled = true;
         document.body.appendChild(this.renderer.domElement);
 
         // Camera and controls
-        this.camera.position.set(0, 5, -20);
-        
-        this.controls = new OrbitControls(this.camera, this.renderer.domElement);
-        this.controls.minDistance = 1;
-        this.controls.maxDistance = 500;
+
+        // this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+        // this.controls.minDistance = 1;
+        // this.controls.maxDistance = 500;
 
         // Add lights
         const ambientLight = new AmbientLight(0xffffff, 0.5);
@@ -64,8 +61,10 @@ export class GameScene {
 
     initPhsysics() {
         this.world = new CANNON.World({
-            gravity: new CANNON.Vec3(0, -9.8, 0)
+            gravity: new CANNON.Vec3(0, 0, 0)
         })
+        this.world.broadphase = new CANNON.NaiveBroadphase(); // Detect coilliding objects
+        this.world.solver.iterations = 15; // collision detection sampling rate
 
         this.ridigBodies = []
 
@@ -82,20 +81,25 @@ export class GameScene {
         this.world.addBody(box.body)
         this.ridigBodies.push([box.mesh, box.body])
 
-        const groundBoxContactMat = new CANNON.ContactMaterial(
-            this.ground.physMat,
-            box.physMat,
-            { friction: 0.04 }
-        );
-        this.world.addContactMaterial(groundBoxContactMat);
+        // this.player = new Player()
+        // this.player.body.position.set(5, 2, 30);
+        // this.camera.position.set(0,2,5)
 
-        const player = new Player()
-        player.body.position = new CANNON.Vec3(3, 5, 0)
-        this.scene.add(player.mesh)
-        this.world.addBody(player.body)
-        this.ridigBodies.push([player.mesh, player.body])
+        // this.scene.add(this.player.mesh)
+        // this.player.mesh.add(this.camera)
+        // this.world.addBody(this.player.body)
+        // this.ridigBodies.push([this.player.mesh, this.player.body])
+
+        const player = new OrbitPlayer(this.scene, this.world)
+        this.player = player
+        this.player.mesh.add(this.camera)
+        this.camera.position.set(0, 2, 5);
+        this.scene.add(this.player.mesh)
+        this.world.addBody(this.player.body)
+        this.ridigBodies.push([this.player.mesh, this.player.body])
 
         this.timeStep = 1 / 60
+
 
         this.renderer.setAnimationLoop(this.animate)
     }
@@ -103,13 +107,12 @@ export class GameScene {
     animate() {
 
         this.world.step(this.timeStep)
-
         for (const [mesh, body] of this.ridigBodies) {
             mesh.position.copy(body.position)
             mesh.quaternion.copy(body.quaternion)
         }
+        this.player.moveObject()
 
-        this.controls.update();
         this.renderer.render(this.scene, this.camera);
     }
 }

@@ -11,9 +11,9 @@ export class Box {
 
         this.physMat = new CANNON.Material();
         this.body = new CANNON.Body({
-            mass: 1,
+            mass: 10,
             shape: new CANNON.Box(new CANNON.Vec3(1, 1, 1)),
-            position: new CANNON.Vec3(1, 20, 0),
+            position: new CANNON.Vec3(5, 2, 0),
             material: this.physMat
         })
 
