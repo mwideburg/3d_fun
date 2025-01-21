@@ -27,7 +27,7 @@ export class StarFoxPlayer {
         this.pitchSpeed = 0
         this.rollSpeed = 0
         this.yawSpeed = 0;
-        this.accelerationImpulse = new CANNON.Vec3();
+        this.accelerationImpulse = new CANNON.Vec3(0, 0, -10);
 
         this.createControls()
     }
@@ -88,7 +88,7 @@ export class StarFoxPlayer {
             this.accelerationHorizontal = 0
         }
         
-        this.accelerationImpulse.set(this.accelerationHorizontal, this.accelerationVertical, 0);
+        this.accelerationImpulse.set(this.accelerationHorizontal, this.accelerationVertical, -5);
         this.body.quaternion.vmult(this.accelerationImpulse, this.accelerationImpulse);
         this.body.applyImpulse(this.accelerationImpulse, this.body.position);
 

@@ -1,8 +1,8 @@
 import * as THREE from 'three';
 import * as CANNON from 'cannon-es'
-export class Ground {
-    constructor(color = 0x000000) {
-        const geometry = new THREE.BoxGeometry(40, 300, 1);
+export class Wall {
+    constructor(position, color = 0xffffff) {
+        const geometry = new THREE.BoxGeometry(300, 30, 1);
         const material = new THREE.MeshStandardMaterial({
             color,
             side: THREE.DoubleSide,
@@ -10,14 +10,14 @@ export class Ground {
         this.mesh = new THREE.Mesh(geometry, material);
         this.mesh.receiveShadow = true;
 
-        this.physMat = new CANNON.Material();
+        this.physMat = new CANNON.Material({friction: 0, restitution: 1});
         this.body = new CANNON.Body({
-            shape: new CANNON.Box(new CANNON.Vec3(20, 150, 0.5)),
+            shape: new CANNON.Box(new CANNON.Vec3(150, 15, 0.5)),
             type: CANNON.Body.STATIC,
             material: this.physMat
         });
-        this.body.position.set(0, 0, -150)
-        this.body.quaternion.setFromEuler(-Math.PI / 2, 0, 0)
+        this.body.quaternion.setFromEuler(0, -Math.PI / 2, 0)
+        this.body.position.set(...position)
     }
 
 }

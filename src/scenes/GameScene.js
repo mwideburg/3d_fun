@@ -6,7 +6,8 @@ import { DirectionalLight } from '../objects/lighting/DirectionalLight';
 import * as CANNON from 'cannon-es'
 import { SpotLight } from '../objects/lighting/SpotLight';
 import { OrbitPlayer } from '../objects/rigid/OrbitPlayer';
-import {StarFoxPlayer} from '../objects/rigid/StarFoxPlayer'
+import { StarFoxPlayer } from '../objects/rigid/StarFoxPlayer'
+import { Wall } from '../objects/rigid/Wall';
 export class GameScene {
     constructor() {
         this.animate = this.animate.bind(this);
@@ -60,7 +61,18 @@ export class GameScene {
         })
         this.world.broadphase = new CANNON.NaiveBroadphase(); // Detect coilliding objects
         this.world.solver.iterations = 15; // collision detection sampling rate
+        const defaultMaterial = new CANNON.Material({ restitution: 0.8 });
+        this.world.defaultContactMaterial = new CANNON.ContactMaterial(
+            defaultMaterial,
+            defaultMaterial,
+            {
+                restitution: 0.8,
+                friction: 0.3,
+            }
+        );
 
+        // Assign default material to world
+        this.world.addContactMaterial(this.world.defaultContactMaterial);
         this.ridigBodies = []
 
         this.ground = new Ground()
@@ -69,7 +81,14 @@ export class GameScene {
         this.world.addBody(this.ground.body)
         this.ridigBodies.push([this.ground.mesh, this.ground.body])
 
-
+        const leftWall = new Wall([-15, 15, -150])
+        const rightWall = new Wall([15, 15, -150])
+        this.scene.add(leftWall.mesh)
+        this.scene.add(rightWall.mesh)
+        this.world.addBody(leftWall.body)
+        this.world.addBody(rightWall.body)
+        this.ridigBodies.push([leftWall.mesh, leftWall.body])
+        this.ridigBodies.push([rightWall.mesh, rightWall.body])
         const box = new Box()
 
         this.scene.add(box.mesh)
