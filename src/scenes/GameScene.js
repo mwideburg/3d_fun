@@ -6,6 +6,7 @@ import { DirectionalLight } from '../objects/lighting/DirectionalLight';
 import * as CANNON from 'cannon-es'
 import { SpotLight } from '../objects/lighting/SpotLight';
 import { OrbitPlayer } from '../objects/rigid/OrbitPlayer';
+import {StarFoxPlayer} from '../objects/rigid/StarFoxPlayer'
 export class GameScene {
     constructor() {
         this.animate = this.animate.bind(this);
@@ -35,12 +36,6 @@ export class GameScene {
         this.renderer.shadowMap.enabled = true;
         document.body.appendChild(this.renderer.domElement);
 
-        // Camera and controls
-
-        // this.controls = new OrbitControls(this.camera, this.renderer.domElement);
-        // this.controls.minDistance = 1;
-        // this.controls.maxDistance = 500;
-
         // Add lights
         const ambientLight = new AmbientLight(0xffffff, 0.5);
         this.scene.add(ambientLight.getLight());
@@ -61,7 +56,7 @@ export class GameScene {
 
     initPhsysics() {
         this.world = new CANNON.World({
-            gravity: new CANNON.Vec3(0, 0, 0)
+            gravity: new CANNON.Vec3(0, -35, 0)
         })
         this.world.broadphase = new CANNON.NaiveBroadphase(); // Detect coilliding objects
         this.world.solver.iterations = 15; // collision detection sampling rate
@@ -81,16 +76,7 @@ export class GameScene {
         this.world.addBody(box.body)
         this.ridigBodies.push([box.mesh, box.body])
 
-        // this.player = new Player()
-        // this.player.body.position.set(5, 2, 30);
-        // this.camera.position.set(0,2,5)
-
-        // this.scene.add(this.player.mesh)
-        // this.player.mesh.add(this.camera)
-        // this.world.addBody(this.player.body)
-        // this.ridigBodies.push([this.player.mesh, this.player.body])
-
-        const player = new OrbitPlayer(this.scene, this.world)
+        const player = new StarFoxPlayer(this.scene, this.world)
         this.player = player
         this.player.mesh.add(this.camera)
         this.camera.position.set(0, 2, 5);
