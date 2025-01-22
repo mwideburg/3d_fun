@@ -10,11 +10,17 @@ import { StarFoxPlayer } from '../objects/rigid/StarFoxPlayer'
 import { Wall } from '../objects/rigid/Wall';
 export class GameScene {
     constructor() {
+        this.start = false
         this.animate = this.animate.bind(this);
-
+        this.startContorls = this.startContorls.bind(this);
         this.initGraphics()
         this.initPhsysics()
         this.initWindowResize()
+    }
+
+    startContorls() {
+        console.log("HEY")
+        this.start = true
     }
 
     initWindowResize() {
@@ -43,21 +49,21 @@ export class GameScene {
 
         const directionalLight = new DirectionalLight(0xffffff, 1, { x: 15, y: 20, z: 0 });
         this.scene.add(directionalLight.getLight());
-        this.scene.add(directionalLight.helper)
+        // this.scene.add(directionalLight.helper)
 
         const spotLight = new SpotLight()
         spotLight.light.position.set(-40, 75, 4.5);
-        const spotLightHelper = new THREE.SpotLightHelper(spotLight.light);
+        // const spotLightHelper = new THREE.SpotLightHelper(spotLight.light);
         this.scene.add(spotLight.light);
-        this.scene.add(spotLightHelper);
+        // this.scene.add(spotLightHelper);
         const shadowCameraHelper = new THREE.CameraHelper(spotLight.light.shadow.camera);
-        this.scene.add(shadowCameraHelper);
+        // this.scene.add(shadowCameraHelper);
 
     }
 
     initPhsysics() {
         this.world = new CANNON.World({
-            gravity: new CANNON.Vec3(0, -35, 0)
+            gravity: new CANNON.Vec3(0, -45, 0)
         })
         this.world.broadphase = new CANNON.NaiveBroadphase(); // Detect coilliding objects
         this.world.solver.iterations = 15; // collision detection sampling rate
@@ -95,7 +101,7 @@ export class GameScene {
         this.world.addBody(box.body)
         this.ridigBodies.push([box.mesh, box.body])
 
-        const player = new StarFoxPlayer(this.scene, this.world)
+        const player = new StarFoxPlayer(this.startContorls)
         this.player = player
         this.player.mesh.add(this.camera)
         this.camera.position.set(0, 2, 5);
@@ -116,7 +122,10 @@ export class GameScene {
             mesh.position.copy(body.position)
             mesh.quaternion.copy(body.quaternion)
         }
-        this.player.moveObject()
+        if (this.start) {
+            this.player.moveObject()
+        }
+
 
         this.renderer.render(this.scene, this.camera);
     }

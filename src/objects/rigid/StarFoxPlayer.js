@@ -1,7 +1,8 @@
 import * as THREE from 'three';
 import * as CANNON from 'cannon-es'
 export class StarFoxPlayer {
-    constructor(size = { x: 1, y: 1, z: 1 }, world) {
+    constructor(start, size = { x: 1, y: 1, z: 1 }) {
+        this.start = start
         const material = new THREE.MeshNormalMaterial();
         const geometry = new THREE.BoxGeometry(size.x, size.y, size.z)
         this.mesh = new THREE.Mesh(geometry, material);
@@ -27,7 +28,7 @@ export class StarFoxPlayer {
         this.pitchSpeed = 0
         this.rollSpeed = 0
         this.yawSpeed = 0;
-        this.accelerationImpulse = new CANNON.Vec3(0, 0, -10);
+        this.accelerationImpulse = new CANNON.Vec3(0, 0, -2);
 
         this.createControls()
     }
@@ -37,7 +38,7 @@ export class StarFoxPlayer {
     }
 
     handleKeyDown(key) {
-        console.log(key)
+        this.start()
         switch (key.toLowerCase()) {
             case "q":
                 this.controls.Q = true;
@@ -78,17 +79,17 @@ export class StarFoxPlayer {
         const {Q, E, Plus, Minus } = this.controls
 
         if (Plus || Minus) {
-            this.accelerationVertical = Plus ? -5 : 5
+            this.accelerationVertical = Plus ? -7 : 7
         }else{
             this.accelerationVertical = 0
         }
         if(Q || E){
-            this.accelerationHorizontal = Q ? -5 : 5
+            this.accelerationHorizontal = Q ? -7 : 7
         }else{
             this.accelerationHorizontal = 0
         }
         
-        this.accelerationImpulse.set(this.accelerationHorizontal, this.accelerationVertical, -5);
+        this.accelerationImpulse.set(this.accelerationHorizontal, this.accelerationVertical, -2);
         this.body.quaternion.vmult(this.accelerationImpulse, this.accelerationImpulse);
         this.body.applyImpulse(this.accelerationImpulse, this.body.position);
 
