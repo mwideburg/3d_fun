@@ -9,8 +9,7 @@ export class SpotLight {
         position = { x: 0, y: 30, z: 0 },
     ) {
         this.light = new THREE.SpotLight(color, intensity, distance, angle, .2, 0);
-        // this.helper = new THREE.SpotLightHelper(this.light, 5);
-        
+
         this.light.position.set(position.x, position.y, position.z);
         this.light.shadow.mapSize.width = 1024; // Higher for better shadow quality
         this.light.shadow.mapSize.height = 1024;
