@@ -1,12 +1,16 @@
 import * as THREE from 'three';
 import * as CANNON from 'cannon-es'
 export class Obstacle {
-    constructor(width, height, color = 0xf0ffff) {
+    constructor(width, height) {
         this.height = height
         this.width = width
+        // Retro colors: cycle through them for a fun look
+        const retroColors = [0xff4500, 0xffd700, 0x00ff00, 0x1e90ff, 0xff1493];
+        this.color = retroColors[Math.floor(Math.random() * retroColors.length)];
+        
         const geometry = new THREE.BoxGeometry(1, this.getRandomHeight(), this.getRandomWidth());
-        const material = new THREE.MeshStandardMaterial({
-            color,
+        const material = new THREE.MeshBasicMaterial({
+            color: this.color,
             side: THREE.DoubleSide,
         });
         this.mesh = new THREE.Mesh(geometry, material);

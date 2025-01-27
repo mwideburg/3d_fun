@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import * as CANNON from 'cannon-es'
 export class Wall {
-    constructor(position, color = 0xffffff) {
+    constructor(position, color = 0x8B4513) {
         const geometry = new THREE.BoxGeometry(900, 30, 1);
         const material = new THREE.MeshStandardMaterial({
             color,

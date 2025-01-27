@@ -12,6 +12,7 @@ import { LeftObstacle } from '../objects/rigid/LeftObstacle';
 import { RightObstacle } from '../objects/rigid/RightObstacle';
 import { TopObstacle } from '../objects/rigid/TopObstacle';
 import { BottomObstacle } from '../objects/rigid/BottomObstacle';
+import { Ceiling } from '../objects/rigid/Ceiling';
 export class GameScene {
     constructor() {
         this.start = false
@@ -26,7 +27,6 @@ export class GameScene {
     }
 
     startContorls() {
-        console.log("HEY")
         this.start = true
     }
 
@@ -85,6 +85,9 @@ export class GameScene {
 
         this.ground = new Ground()
         this.addRigidObject(this.ground.mesh, this.ground.body)
+        
+        this.ceiling = new Ceiling()
+        this.addRigidObject(this.ceiling.mesh, this.ceiling.body)
 
         const leftWall = new Wall([-20, 15, -150])
         const rightWall = new Wall([20, 15, -150])
@@ -96,7 +99,7 @@ export class GameScene {
         const player = new StarFoxPlayer(this.startContorls)
         this.player = player
         this.player.mesh.add(this.camera)
-        this.camera.position.set(0, 2, 5);
+        this.camera.position.set(0, 1, 5);
         this.addRigidObject(this.player.mesh, this.player.body)
 
         this.timeStep = 1 / 60
@@ -106,25 +109,22 @@ export class GameScene {
     }
 
     createObstacles() {
-        const wallType = [1, 2, 3, 4]
         let wallPosition = -40
         let wallCount = 0
-        let wallTypeIndex = 0
+        let wallType = 0
         while (wallCount < 40) {
-            const type = wallType[wallTypeIndex]
             let obstacle
-            switch (type) {
-                case 1:
+            switch (wallType) {
+                case 0:
                     obstacle = new LeftObstacle(0, 30, wallPosition)
                     break;
-                case 2:
-                    
+                case 1:
                     obstacle = new TopObstacle(40, 0, wallPosition)
                     break;
-                case 3:
+                case 2:
                     obstacle = new RightObstacle(0, 30, wallPosition)
                     break;
-                case 4:
+                case 3:
                     obstacle = new BottomObstacle(40, 0, wallPosition)
                     break;
                 default:
@@ -132,8 +132,8 @@ export class GameScene {
             }
             this.addRigidObject(obstacle.mesh, obstacle.body)
             wallPosition -= 45
-            wallTypeIndex++
-            if(wallTypeIndex > 3) wallTypeIndex = 0
+            wallType++
+            if(wallType > 3) wallType = 0
             wallCount++
         }
 
