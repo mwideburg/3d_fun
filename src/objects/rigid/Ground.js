@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import * as CANNON from 'cannon-es'
 export class Ground {
-    constructor(texturePath, color = 0x0fffff) {
+    constructor(texturePath, opacity = 1, transparent = false, color = 0x0fffff) {
 
         // Load a low-resolution pixelated texture
         var loader = new THREE.TextureLoader();
@@ -15,7 +15,9 @@ export class Ground {
         const material = new THREE.MeshLambertMaterial({
             color,
             side: THREE.DoubleSide,
-            map: groundTexture
+            map: groundTexture,
+            opacity,
+            transparent
         });
         this.mesh = new THREE.Mesh(geometry, material);
         this.mesh.receiveShadow = true;

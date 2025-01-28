@@ -91,8 +91,8 @@ export class GameScene {
         this.ground = new Ground('grass.png')
         this.addRigidObject(this.ground.mesh, this.ground.body)
 
-        // this.ceiling = new Ceiling()
-        // this.addRigidObject(this.ceiling.mesh, this.ceiling.body)
+        this.ceiling = new Ceiling("", .5, true)
+        this.addRigidObject(this.ceiling.mesh, this.ceiling.body)
 
         const leftWall = new Wall([-20, 15, -150])
         const rightWall = new Wall([20, 15, -150])
