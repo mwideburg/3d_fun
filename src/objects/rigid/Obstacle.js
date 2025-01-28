@@ -15,6 +15,7 @@ export class Obstacle {
             opacity: .5,
         });
         this.mesh = new THREE.Mesh(geometry, material);
+        this.mesh.castShadow = true
         this.mesh.receiveShadow = true;
 
         this.physMat = new CANNON.Material({friction: 0, restitution: 1});
@@ -42,9 +43,9 @@ export class Obstacle {
 
     getRandomHeight() {
         if(this.height) return this.height
-        
+
         const scaledMin = Math.ceil(3);
-        const scaledMax = Math.floor(5);
+        const scaledMax = Math.floor(4.5);
 
         const randomScaled = Math.floor(Math.random() * (scaledMax - scaledMin + 1)) + scaledMin;
 

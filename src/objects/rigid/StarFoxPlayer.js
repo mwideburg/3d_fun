@@ -6,7 +6,7 @@ export class StarFoxPlayer {
         const material = new THREE.MeshNormalMaterial();
         const geometry = new THREE.BoxGeometry(size.x, size.y, size.z)
         this.mesh = new THREE.Mesh(geometry, material);
-
+        this.mesh.castShadow = true
         const shape = new CANNON.Box(new CANNON.Vec3(0.5, 0.5, 0.5));
         this.body = new CANNON.Body({ mass: 5 });
         this.body.fixedRotation = true
@@ -76,24 +76,27 @@ export class StarFoxPlayer {
     }
 
     moveObject() {
-        const {Q, E, Plus, Minus } = this.controls
+        const { Q, E, Plus, Minus } = this.controls
 
         if (Plus || Minus) {
-            this.accelerationVertical = Plus ? -7 : 7
-        }else{
+            this.accelerationVertical = Plus ? -5 : 5
+            console.log(this.body)
+        } else {
             this.accelerationVertical = 0
         }
-        if(Q || E){
-            this.accelerationHorizontal = Q ? -7 : 7
-        }else{
+        if (Q || E) {
+            this.accelerationHorizontal = Q ? -3 : 3
+        } else {
             this.accelerationHorizontal = 0
         }
-        
-        this.accelerationImpulse.set(this.accelerationHorizontal, this.accelerationVertical, -2);
+        // Set constant velocity for the Z-axis
+        const constantZVelocity = -10; // Replace with your desired Z velocity
+        this.body.velocity.z = constantZVelocity;
+        this.accelerationImpulse.set(this.accelerationHorizontal, this.accelerationVertical, 0);
         this.body.quaternion.vmult(this.accelerationImpulse, this.accelerationImpulse);
         this.body.applyImpulse(this.accelerationImpulse, this.body.position);
 
-        this.body.linearDamping = .5;
+        this.body.linearDamping = .1;
         this.body.angularDamping = 0.9;
     }
 

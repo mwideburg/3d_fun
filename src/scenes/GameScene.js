@@ -53,13 +53,14 @@ export class GameScene {
         // Background
         this.scene.background = new THREE.Color(0xcce0ff);
         // Fog will make the 750 distance blurry
-        this.scene.fog = new THREE.Fog(0xcce0ff, 0, 900);
+        this.scene.fog = new THREE.Fog(0xcce0ff, 0, 150);
 
         // Add lights
-        const ambientLight = new AmbientLight(0xffffff, 0.5);
+        const ambientLight = new AmbientLight(0xffffff, 0.7);
+        ambientLight.castShadow = true
         this.scene.add(ambientLight.light);
 
-        const directionalLight = new DirectionalLight(0xffffff, 1, { x: 15, y: 20, z: 0 });
+        const directionalLight = new DirectionalLight(0xffffff, 1, { x: 15, y: 20, z: -200 });
         this.scene.add(directionalLight.light);
 
         const spotLight = new SpotLight()
@@ -70,7 +71,7 @@ export class GameScene {
 
     initPhsysics() {
         this.world = new CANNON.World({
-            gravity: new CANNON.Vec3(0, -45, 0)
+            gravity: new CANNON.Vec3(0, -10, 0)
         })
         this.world.broadphase = new CANNON.NaiveBroadphase(); // Detect coilliding objects
         this.world.solver.iterations = 15; // collision detection sampling rate
@@ -114,7 +115,7 @@ export class GameScene {
     }
 
     createObstacles() {
-        let obstaclePosition = -40
+        let obstaclePosition = -30
         let obstacleCount = 0
         let obstacleType = 0
         while (obstacleCount < 40) {
@@ -136,7 +137,7 @@ export class GameScene {
                     break;
             }
             this.addRigidObject(obstacle.mesh, obstacle.body)
-            obstaclePosition -= 45
+            obstaclePosition -= 30
             obstacleType++
             if (obstacleType > 3) obstacleType = 0
             obstacleCount++
