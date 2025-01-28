@@ -18,4 +18,9 @@ export class SpotLight {
         this.light.castShadow = true;
 
     }
+
+    createLightHelper() {
+        this.lightHelper = new THREE.SpotLightHelper(this.light, 5)
+        return this.lightHelper
+    }
 }

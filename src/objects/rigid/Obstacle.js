@@ -22,7 +22,8 @@ export class Obstacle {
         this.body = new CANNON.Body({
             shape: new CANNON.Box(new CANNON.Vec3(.5, this.height/2, this.width/2)),
             type: CANNON.Body.STATIC,
-            material: this.physMat
+            material: this.physMat,
+            collisionFilterGroup: 2,
         });
         this.body.quaternion.setFromEuler(0, -Math.PI / 2, 0)
 

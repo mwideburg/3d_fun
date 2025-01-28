@@ -5,6 +5,10 @@ export class DirectionalLight {
         this.light = new THREE.DirectionalLight(color, intensity);
         this.light.position.set(position.x, position.y, position.z);
         this.light.castShadow = true;
+    }
 
+    createLightHelper(){
+        this.lightHelper = new THREE.DirectionalLightHelper(this.light, 5)
+        return this.lightHelper
     }
 }

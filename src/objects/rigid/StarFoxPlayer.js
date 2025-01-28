@@ -8,10 +8,10 @@ export class StarFoxPlayer {
         this.mesh = new THREE.Mesh(geometry, material);
         this.mesh.castShadow = true
         const shape = new CANNON.Box(new CANNON.Vec3(0.5, 0.5, 0.5));
-        this.body = new CANNON.Body({ mass: 5 });
+        this.body = new CANNON.Body({ mass: 5, collisionFilterGroup: 2 });
         this.body.fixedRotation = true
         this.body.addShape(shape);
-        this.body.position.set(0, 2, 0);
+        this.body.position.set(0, 1, 0);
 
         this.controls = {
             W: false,
@@ -28,6 +28,7 @@ export class StarFoxPlayer {
         this.pitchSpeed = 0
         this.rollSpeed = 0
         this.yawSpeed = 0;
+        this.speed = -10
         this.accelerationImpulse = new CANNON.Vec3(0, 0, -2);
 
         this.createControls()
@@ -49,6 +50,9 @@ export class StarFoxPlayer {
             case "+":
                 this.controls.Plus = true;
                 break;
+            case "=":
+                this.controls.Plus = true;
+                break;
             case "-":
                 this.controls.Minus = true;
                 break;
@@ -56,6 +60,7 @@ export class StarFoxPlayer {
     }
 
     handleKeyUp(key) {
+        console.log(key)
         switch (key.toLowerCase()) {
             case "q":
                 this.controls.Q = false;
@@ -69,6 +74,9 @@ export class StarFoxPlayer {
             case "+":
                 this.controls.Plus = false;
                 break;
+            case "=":
+                this.controls.Plus = false;
+                break;
             case "-":
                 this.controls.Minus = false;
                 break;
@@ -80,7 +88,6 @@ export class StarFoxPlayer {
 
         if (Plus || Minus) {
             this.accelerationVertical = Plus ? -5 : 5
-            console.log(this.body)
         } else {
             this.accelerationVertical = 0
         }
@@ -90,8 +97,8 @@ export class StarFoxPlayer {
             this.accelerationHorizontal = 0
         }
         // Set constant velocity for the Z-axis
-        const constantZVelocity = -10; // Replace with your desired Z velocity
-        this.body.velocity.z = constantZVelocity;
+
+        this.body.velocity.z = this.speed;
         this.accelerationImpulse.set(this.accelerationHorizontal, this.accelerationVertical, 0);
         this.body.quaternion.vmult(this.accelerationImpulse, this.accelerationImpulse);
         this.body.applyImpulse(this.accelerationImpulse, this.body.position);
