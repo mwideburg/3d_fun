@@ -54,12 +54,6 @@ export class GameScene {
         ambientLight.castShadow = true
         this.scene.add(ambientLight.light);
 
-        this.spotLight = new SpotLight()
-        this.spotLight.light.position.set(-40, 75, 4.5);
-        this.scene.add(this.spotLight.light);
-        const sLightHelper = this.spotLight.createLightHelper()
-        this.scene.add(sLightHelper)
-
 
     }
 
@@ -113,18 +107,18 @@ export class GameScene {
         this.obstacleCount = 0;
         this.obstacleType = 0;
         this.obstaclePosition = -30;
-    
+
         for (let i = 0; i < 40; i++) {
             this.addObstacle();
         }
-    
+
         // Create obstacles periodically as the player progresses
         setInterval(() => {
-            if(this.start){
+            if (this.start) {
                 this.obstacleSpacing = Math.max(10, this.obstacleSpacing - 0.1); // Decrease spacing, min 10
                 this.addObstacle();
             }
-        }, 1000); // Add obstacles every 2 seconds
+        }, 1000);
     }
 
     addObstacle() {
@@ -146,8 +140,8 @@ export class GameScene {
                 break;
         }
         this.addRigidObject(obstacle.mesh, obstacle.body);
-        this.obstaclePosition -= this.obstacleSpacing; // Use dynamic spacing
-        this.obstacleType = (this.obstacleType + 1) % 4; // Cycle through obstacle types
+        this.obstaclePosition -= this.obstacleSpacing;
+        this.obstacleType = (this.obstacleType + 1) % 4;
     }
 
     addRigidObject(mesh, body) {
@@ -157,14 +151,14 @@ export class GameScene {
     }
 
     updateBoundry() {
-        this.ceiling.mesh.position.z = this.player.mesh.position.z + 5; // Adjust speed for the background
-        this.ceiling.body.position.z = this.player.mesh.position.z + 5; // Adjust speed for the background
-        this.ground.mesh.position.z = this.player.mesh.position.z + 5; // Adjust speed for the background
-        this.ground.body.position.z = this.player.mesh.position.z + 5; // Adjust speed for the background
-        this.leftWall.mesh.position.z = this.player.mesh.position.z + 5; // Adjust speed for the background
-        this.leftWall.body.position.z = this.player.mesh.position.z + 5; // Adjust speed for the background
-        this.rightWall.mesh.position.z = this.player.mesh.position.z + 5; // Adjust speed for the background
-        this.rightWall.body.position.z = this.player.mesh.position.z + 5; // Adjust speed for the background
+        this.ceiling.mesh.position.z = this.player.mesh.position.z + 5;
+        this.ceiling.body.position.z = this.player.mesh.position.z + 5;
+        this.ground.mesh.position.z = this.player.mesh.position.z + 5;
+        this.ground.body.position.z = this.player.mesh.position.z + 5;
+        this.leftWall.mesh.position.z = this.player.mesh.position.z + 5;
+        this.leftWall.body.position.z = this.player.mesh.position.z + 5;
+        this.rightWall.mesh.position.z = this.player.mesh.position.z + 5;
+        this.rightWall.body.position.z = this.player.mesh.position.z + 5;
     }
 
     startContorls() {
@@ -173,31 +167,31 @@ export class GameScene {
             this.start = true;
         }
     }
-    
+
 
     resetGame() {
         // Stop the game
         this.start = false;
-    
+
         // Clear all rigid bodies and meshes
         for (const [mesh, body] of this.ridigBodies) {
             this.scene.remove(mesh);
             this.world.removeBody(body);
         }
         this.ridigBodies = [];
-    
+
         // Reinitialize player
         this.player.body.position.set(0, 1, 0);
         this.player.body.velocity.set(0, 0, 0);
         this.player.speed = 1;
-    
+
         // Reset camera position
         this.camera.position.set(0, 1, 5);
-    
+
         // Reinitialize ground, walls, and obstacles
         this.initPhsysics();
-    
-        console.log("Game has been reset. Press Start to play again!");
+
+        console.log("Game has been reset.");
     }
 
     animate() {
@@ -213,9 +207,8 @@ export class GameScene {
             this.updateBoundry()
         }
 
-        for(let collision of this.world.contacts){
-            if(collision.bi.collisionFilterGroup === collision.bj.collisionFilterGroup){
-                console.log("theres been a collision", collision)
+        for (let collision of this.world.contacts) {
+            if (collision.bi.collisionFilterGroup === collision.bj.collisionFilterGroup) {
                 console.log("GAME ENDED")
                 this.resetGame();
             }
