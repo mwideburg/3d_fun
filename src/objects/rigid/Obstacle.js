@@ -4,14 +4,15 @@ export class Obstacle {
     constructor(width, height) {
         this.height = height
         this.width = width
-        // Retro colors: cycle through them for a fun look
         const retroColors = [0xff4500, 0xffd700, 0x00ff00, 0x1e90ff, 0xff1493];
         this.color = retroColors[Math.floor(Math.random() * retroColors.length)];
         
         const geometry = new THREE.BoxGeometry(1, this.getRandomHeight(), this.getRandomWidth());
         const material = new THREE.MeshBasicMaterial({
             color: this.color,
+            transparent: true,
             side: THREE.DoubleSide,
+            opacity: .5,
         });
         this.mesh = new THREE.Mesh(geometry, material);
         this.mesh.receiveShadow = true;
@@ -29,7 +30,7 @@ export class Obstacle {
 
     getRandomWidth() {
         if(this.width) return this.width
-        // Ensure min and max are integers
+
         const scaledMin = Math.ceil(3);
         const scaledMax = Math.floor(6);
 
@@ -41,7 +42,7 @@ export class Obstacle {
 
     getRandomHeight() {
         if(this.height) return this.height
-        // Ensure min and max are integers
+        
         const scaledMin = Math.ceil(3);
         const scaledMax = Math.floor(5);
 

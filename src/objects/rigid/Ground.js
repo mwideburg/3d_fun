@@ -1,22 +1,21 @@
 import * as THREE from 'three';
 import * as CANNON from 'cannon-es'
 export class Ground {
-    constructor(color = 0x0fffff) {
+    constructor(texturePath, color = 0x0fffff) {
 
         // Load a low-resolution pixelated texture
-        const texture = new THREE.TextureLoader().load('pixelated.jpg');
-        texture.wrapS = THREE.RepeatWrapping;
-        texture.wrapT = THREE.RepeatWrapping;
-        texture.magFilter = THREE.NearestFilter;
-        texture.minFilter = THREE.NearestFilter;
-        texture.repeat.set(8, 8); // Increase tiling
-        texture.offset.set(0.1, 0.1); // Add offset for variation
+        var loader = new THREE.TextureLoader();
+        var groundTexture = loader.load(`${texturePath}`);
+        groundTexture.wrapS = groundTexture.wrapT = THREE.RepeatWrapping;
+        groundTexture.repeat.set(25, 25);
+        // groundTexture.anisotropy = 16;
+        groundTexture.encoding = THREE.sRGBEncoding;
 
-        const geometry = new THREE.BoxGeometry(40, 900, 1);
-        const material = new THREE.MeshBasicMaterial({
+        const geometry = new THREE.BoxGeometry(500, 500, 1);
+        const material = new THREE.MeshLambertMaterial({
             color,
             side: THREE.DoubleSide,
-            map: texture
+            map: groundTexture
         });
         this.mesh = new THREE.Mesh(geometry, material);
         this.mesh.receiveShadow = true;

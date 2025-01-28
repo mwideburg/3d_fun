@@ -50,6 +50,11 @@ export class GameScene {
         this.renderer.shadowMap.enabled = true;
         document.body.appendChild(this.renderer.domElement);
 
+        // Background
+        this.scene.background = new THREE.Color(0xcce0ff);
+        // Fog will make the 750 distance blurry
+        this.scene.fog = new THREE.Fog(0xcce0ff, 0, 900);
+
         // Add lights
         const ambientLight = new AmbientLight(0xffffff, 0.5);
         this.scene.add(ambientLight.light);
@@ -83,11 +88,11 @@ export class GameScene {
         this.world.addContactMaterial(this.world.defaultContactMaterial);
 
 
-        this.ground = new Ground()
+        this.ground = new Ground('grass.png')
         this.addRigidObject(this.ground.mesh, this.ground.body)
-        
-        this.ceiling = new Ceiling()
-        this.addRigidObject(this.ceiling.mesh, this.ceiling.body)
+
+        // this.ceiling = new Ceiling()
+        // this.addRigidObject(this.ceiling.mesh, this.ceiling.body)
 
         const leftWall = new Wall([-20, 15, -150])
         const rightWall = new Wall([20, 15, -150])
@@ -109,32 +114,32 @@ export class GameScene {
     }
 
     createObstacles() {
-        let wallPosition = -40
-        let wallCount = 0
-        let wallType = 0
-        while (wallCount < 40) {
+        let obstaclePosition = -40
+        let obstacleCount = 0
+        let obstacleType = 0
+        while (obstacleCount < 40) {
             let obstacle
-            switch (wallType) {
+            switch (obstacleType) {
                 case 0:
-                    obstacle = new LeftObstacle(0, 30, wallPosition)
+                    obstacle = new LeftObstacle(0, 30, obstaclePosition)
                     break;
                 case 1:
-                    obstacle = new TopObstacle(40, 0, wallPosition)
+                    obstacle = new TopObstacle(40, 0, obstaclePosition)
                     break;
                 case 2:
-                    obstacle = new RightObstacle(0, 30, wallPosition)
+                    obstacle = new RightObstacle(0, 30, obstaclePosition)
                     break;
                 case 3:
-                    obstacle = new BottomObstacle(40, 0, wallPosition)
+                    obstacle = new BottomObstacle(40, 0, obstaclePosition)
                     break;
                 default:
                     break;
             }
             this.addRigidObject(obstacle.mesh, obstacle.body)
-            wallPosition -= 45
-            wallType++
-            if(wallType > 3) wallType = 0
-            wallCount++
+            obstaclePosition -= 45
+            obstacleType++
+            if (obstacleType > 3) obstacleType = 0
+            obstacleCount++
         }
 
 
