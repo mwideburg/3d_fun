@@ -3,13 +3,12 @@ import * as THREE from 'three';
 export class DirectionalLight {
     constructor(color = 0xffffff, intensity = 1, position = { x: 0, y: 30, z: 0 }) {
         this.light = new THREE.DirectionalLight(color, intensity);
-        this.helper = new THREE.DirectionalLightHelper(this.light, 5);
         this.light.position.set(position.x, position.y, position.z);
         this.light.castShadow = true;
-
     }
 
-    getLight() {
-        return this.light;
+    createLightHelper(){
+        this.lightHelper = new THREE.DirectionalLightHelper(this.light, 5)
+        return this.lightHelper
     }
 }
