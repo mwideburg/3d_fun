@@ -60,7 +60,6 @@ export class StarFoxPlayer {
     }
 
     handleKeyUp(key) {
-        console.log(key)
         switch (key.toLowerCase()) {
             case "q":
                 this.controls.Q = false;
