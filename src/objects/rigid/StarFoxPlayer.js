@@ -1,8 +1,8 @@
 import * as THREE from 'three';
 import * as CANNON from 'cannon-es'
 export class StarFoxPlayer {
-    constructor(start, size = { x: 1, y: 1, z: 1 }) {
-        this.start = start
+    constructor(size = { x: 1, y: 1, z: 1 }) {
+        this.disabled = false
         const material = new THREE.MeshNormalMaterial();
         const geometry = new THREE.BoxGeometry(size.x, size.y, size.z)
         this.mesh = new THREE.Mesh(geometry, material);
@@ -39,7 +39,7 @@ export class StarFoxPlayer {
     }
 
     handleKeyDown(key) {
-        this.start()
+        if(this.disabled) return
         switch (key.toLowerCase()) {
             case "q":
                 this.controls.Q = true;
@@ -60,6 +60,7 @@ export class StarFoxPlayer {
     }
 
     handleKeyUp(key) {
+        if(this.disabled) return
         switch (key.toLowerCase()) {
             case "q":
                 this.controls.Q = false;

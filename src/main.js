@@ -10,3 +10,12 @@ resetButton.addEventListener('click', () => {
     game.resetGame();
 });
 document.body.appendChild(resetButton);
+
+const scoreDiv = document.createElement('div');
+scoreDiv.innerText = `Score: ${game.score}`;
+scoreDiv.id = 'score-div'
+scoreDiv.style.position = 'absolute';
+scoreDiv.style.top = '10px';
+scoreDiv.style.right = '10px';
+scoreDiv.style.color = 'white';
+document.body.appendChild(scoreDiv);
