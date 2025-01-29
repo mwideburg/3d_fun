@@ -2,7 +2,6 @@ import * as THREE from 'three';
 import { Ground } from '../objects/rigid/Ground';
 import { AmbientLight } from '../objects/lighting/AmbientLight';
 import * as CANNON from 'cannon-es'
-import { SpotLight } from '../objects/lighting/SpotLight';
 import { StarFoxPlayer } from '../objects/rigid/StarFoxPlayer'
 import { Wall } from '../objects/rigid/Wall';
 import { LeftObstacle } from '../objects/rigid/LeftObstacle';
@@ -10,21 +9,18 @@ import { RightObstacle } from '../objects/rigid/RightObstacle';
 import { TopObstacle } from '../objects/rigid/TopObstacle';
 import { BottomObstacle } from '../objects/rigid/BottomObstacle';
 import { Ceiling } from '../objects/rigid/Ceiling';
+
 export class GameScene {
     constructor() {
         this.start = false
+        this.score = 0
         this.ridigBodies = []
 
         this.animate = this.animate.bind(this);
-        this.startContorls = this.startContorls.bind(this);
 
         this.initGraphics()
         this.initPhsysics()
         this.initWindowResize()
-    }
-
-    startContorls() {
-        this.start = true
     }
 
     initWindowResize() {
@@ -90,7 +86,7 @@ export class GameScene {
 
         this.createObstacles()
 
-        const player = new StarFoxPlayer(this.startContorls)
+        const player = new StarFoxPlayer()
         this.player = player
         this.player.mesh.add(this.camera)
         this.camera.position.set(0, 1, 5);
@@ -114,8 +110,9 @@ export class GameScene {
 
         // Create obstacles periodically as the player progresses
         setInterval(() => {
-            if (this.start) {
+            if (!this.player.disabled) {
                 this.obstacleSpacing = Math.max(10, this.obstacleSpacing - 0.1); // Decrease spacing, min 10
+                console.log("adding obstacle")
                 this.addObstacle();
             }
         }, 1000);
@@ -161,18 +158,29 @@ export class GameScene {
         this.rightWall.body.position.z = this.player.mesh.position.z + 5;
     }
 
-    startContorls() {
-        if (!this.start) {
-            console.log("Game starting...");
-            this.start = true;
-        }
+    updateScore(){
+        this.score = Math.floor(this.player.mesh.position.z * -1)
+        const scoreDiv = document.getElementById('score-div')
+        if(!scoreDiv) return
+        scoreDiv.innerText = `Score: ${this.score}`;
+
+    }
+
+    gameOver(){
+        const gameOverDiv = document.getElementById('game-over-div')
+        const score = document.getElementById('game-score')
+        score.innerText =`Score: ${this.score}`
+        gameOverDiv.style.display = 'block'
     }
 
 
     resetGame() {
         // Stop the game
         this.start = false;
+        this.score = 0
 
+        const gameOverDiv = document.getElementById('game-over-div')
+        gameOverDiv.style.display = 'none'
         // Clear all rigid bodies and meshes
         for (const [mesh, body] of this.ridigBodies) {
             this.scene.remove(mesh);
@@ -201,16 +209,18 @@ export class GameScene {
             mesh.position.copy(body.position)
             mesh.quaternion.copy(body.quaternion)
         }
-        if (this.start) {
+        if (!this.player.disabled) {
             this.player.moveObject()
             this.player.speed -= 0.004
             this.updateBoundry()
+            this.updateScore()
         }
 
         for (let collision of this.world.contacts) {
             if (collision.bi.collisionFilterGroup === collision.bj.collisionFilterGroup) {
                 console.log("GAME ENDED")
-                this.resetGame();
+                this.player.disabled = true
+                this.gameOver()
             }
         }
 
