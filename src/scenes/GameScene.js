@@ -110,8 +110,9 @@ export class GameScene {
 
         // Create obstacles periodically as the player progresses
         setInterval(() => {
-            if (this.start) {
+            if (!this.player.disabled) {
                 this.obstacleSpacing = Math.max(10, this.obstacleSpacing - 0.1); // Decrease spacing, min 10
+                console.log("adding obstacle")
                 this.addObstacle();
             }
         }, 1000);
@@ -165,11 +166,21 @@ export class GameScene {
 
     }
 
+    gameOver(){
+        const gameOverDiv = document.getElementById('game-over-div')
+        const score = document.getElementById('game-score')
+        score.innerText =`Score: ${this.score}`
+        gameOverDiv.style.display = 'block'
+    }
+
 
     resetGame() {
         // Stop the game
         this.start = false;
         this.score = 0
+
+        const gameOverDiv = document.getElementById('game-over-div')
+        gameOverDiv.style.display = 'none'
         // Clear all rigid bodies and meshes
         for (const [mesh, body] of this.ridigBodies) {
             this.scene.remove(mesh);
@@ -209,6 +220,7 @@ export class GameScene {
             if (collision.bi.collisionFilterGroup === collision.bj.collisionFilterGroup) {
                 console.log("GAME ENDED")
                 this.player.disabled = true
+                this.gameOver()
             }
         }
 

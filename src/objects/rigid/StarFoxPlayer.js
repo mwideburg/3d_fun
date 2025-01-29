@@ -47,7 +47,7 @@ export class StarFoxPlayer {
             case "e":
                 this.controls.E = true;
                 break;
-            case "+":
+            case "*":
                 this.controls.Plus = true;
                 break;
             case "=":
@@ -71,7 +71,7 @@ export class StarFoxPlayer {
             case "shift":
                 this.controls.Shft = false;
                 break;
-            case "+":
+            case "*":
                 this.controls.Plus = false;
                 break;
             case "=":
